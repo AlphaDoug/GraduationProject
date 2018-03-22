@@ -34,6 +34,7 @@ public class Collection : MonoBehaviour
             {
                 gameObject.SetActive(false);
             }
+            transform.parent.gameObject.GetComponent<CollectionUI>().AddOneCollection();
         }
     }
 }
