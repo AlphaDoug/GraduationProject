@@ -1,10 +1,11 @@
 using System;
 using UnityEngine;
+using UnityStandardAssets.Characters.FirstPerson;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityStandardAssets.Utility;
 using Random = UnityEngine.Random;
 
-namespace UnityStandardAssets.Characters.FirstPerson
+namespace Player
 {
     [RequireComponent(typeof (CharacterController))]
     [RequireComponent(typeof (AudioSource))]
@@ -42,6 +43,12 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+        private Portal[] portals;
+        /// <summary>
+        ///  «∑Ò∆¡±Œº¸≈Ã∫Õ Û±Í ‰»Î
+        /// </summary>
+        public bool isShieldInput = false;
+
         // Use this for initialization
         private void Start()
         {
@@ -55,6 +62,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_Jumping = false;
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
+
+            portals = GameObject.FindObjectsOfType<Portal>();
         }
 
 
@@ -203,9 +212,28 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void GetInput(out float speed)
         {
-            // Read input
-            float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-            float vertical = CrossPlatformInputManager.GetAxis("Vertical");
+            float horizontal, vertical;
+            horizontal = 0;
+            vertical = 0;
+            for (int i = 0; i < portals.Length; i++)
+            {
+                if (portals[i].isCameraImageChanging)
+                {
+                    isShieldInput = true;
+                    break;
+                }
+                else
+                {
+                    isShieldInput = false;
+                }
+            }
+            if (!isShieldInput)
+            {
+                // Read input
+                horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
+                vertical = CrossPlatformInputManager.GetAxis("Vertical");
+            }
+
 
             bool waswalking = m_IsWalking;
 

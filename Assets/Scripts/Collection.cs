@@ -9,18 +9,6 @@ public class Collection : MonoBehaviour
     /// </summary>
     public GameObject nextCollection;
 
-    // Use this for initialization
-    void Start ()
-    {
-		
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-		
-	}
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
@@ -33,6 +21,8 @@ public class Collection : MonoBehaviour
             else
             {
                 gameObject.SetActive(false);
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().SetNextGroupTrue();
+
             }
             transform.parent.gameObject.GetComponent<CollectionUI>().AddOneCollection();
         }

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class CollectionUI : MonoBehaviour
 {
+    public GameObject collectionUI;
+    public GameObject specifiedLocationUI;
     public Text collectingProcess;
 
     private int totalCollectionsNum;
@@ -14,8 +16,10 @@ public class CollectionUI : MonoBehaviour
 	void Start ()
     {
         currentNum = 0;
+        collectionUI.SetActive(true);
+        specifiedLocationUI.SetActive(false);
         totalCollectionsNum = GetComponentsInChildren<Collection>(true).Length;
-        collectingProcess.text = currentNum + "/" + totalCollectionsNum;
+        collectingProcess.text ="收集进度:" + currentNum + "/" + totalCollectionsNum;
 	}
 	
 	// Update is called once per frame
@@ -32,6 +36,6 @@ public class CollectionUI : MonoBehaviour
             return;
         }
         currentNum++;
-        collectingProcess.text = currentNum + "/" + totalCollectionsNum;
+        collectingProcess.text = "收集进度:" + currentNum + "/" + totalCollectionsNum;
     }
 }
