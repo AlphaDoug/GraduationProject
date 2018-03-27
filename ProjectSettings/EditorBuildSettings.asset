@@ -6,5 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Wangmeng2.unity
-    guid: 7fc1c6ed59a23db449ebd9739d29f585
+    path: Assets/New Scene/Update.unity
+    guid: 48fc687bdba05a84d8d17601a4df4821
+  - enabled: 1
+    path: Assets/New Scene/New Scene.unity
+    guid: f79bba1dd34a8834d80bc7b15dd7f3d2
