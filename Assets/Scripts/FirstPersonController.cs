@@ -11,6 +11,8 @@ namespace Player
     [RequireComponent(typeof (AudioSource))]
     public class FirstPersonController : MonoBehaviour
     {
+
+
         [SerializeField] private bool m_IsWalking;
         [SerializeField] private float m_WalkSpeed;
         [SerializeField] private float m_RunSpeed;
@@ -48,10 +50,26 @@ namespace Player
         /// 是否屏蔽键盘和鼠标输入
         /// </summary>
         public bool isShieldInput = false;
+        private OOFormArray mForm = null;
+        private bool m_canJump;
+        private bool m_isRun;
 
         // Use this for initialization
         private void Start()
         {
+            #region 加载Player属性表
+            if (mForm == null)
+            {
+                mForm = OOFormArray.ReadFromResources("Data/Tables/TbPlayer");
+            }
+            #endregion
+
+            #region 初始化FPS控制器属性
+            m_WalkSpeed = mForm.GetFloat("WalkSpeed", "FPS");
+            m_RunSpeed = mForm.GetFloat("RunSpeed", "FPS");
+            m_canJump = mForm.GetBool("CanJump", "FPS");
+            m_IsWalking = mForm.GetBool("IsWalking", "FPS");
+            #endregion
             m_CharacterController = GetComponent<CharacterController>();
             m_Camera = Camera.main;
             m_OriginalCameraPosition = m_Camera.transform.localPosition;
@@ -64,6 +82,8 @@ namespace Player
 			m_MouseLook.Init(transform , m_Camera.transform);
 
             portals = GameObject.FindObjectsOfType<Portal>();
+
+
         }
 
 
@@ -72,9 +92,9 @@ namespace Player
         {
             RotateView();
             // the jump state needs to read here to make sure it is not missed
-            if (!m_Jump)
+            if (!m_Jump && m_canJump)
             {
-               // m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
+               m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
             }
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
