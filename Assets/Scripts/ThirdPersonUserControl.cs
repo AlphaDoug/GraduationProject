@@ -59,7 +59,7 @@ namespace Player
             v = 0;
             for (int i = 0; i < portals.Length; i++)
             {
-                if (portals[i].isCameraImageChanging)
+                if (portals[i].GetIsCameraImageChanging())
                 {
                     isShieldInput = true;
                     break;

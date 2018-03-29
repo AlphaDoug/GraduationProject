@@ -11,7 +11,7 @@ namespace Player
     [RequireComponent(typeof (AudioSource))]
     public class FirstPersonController : MonoBehaviour
     {
-
+        public Portal[] portals;
 
         [SerializeField] private bool m_IsWalking;
         [SerializeField] private float m_WalkSpeed;
@@ -45,7 +45,7 @@ namespace Player
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
-        private Portal[] portals;
+
         /// <summary>
         ///  «∑Ò∆¡±Œº¸≈Ã∫Õ Û±Í ‰»Î
         /// </summary>
@@ -81,7 +81,7 @@ namespace Player
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
 
-            portals = GameObject.FindObjectsOfType<Portal>();
+
 
 
         }
@@ -237,7 +237,7 @@ namespace Player
             vertical = 0;
             for (int i = 0; i < portals.Length; i++)
             {
-                if (portals[i].isCameraImageChanging)
+                if (portals[i].GetIsCameraImageChanging())
                 {
                     isShieldInput = true;
                     break;

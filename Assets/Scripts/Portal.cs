@@ -7,16 +7,18 @@ namespace Player
 {
     public class Portal : MonoBehaviour
     {
-        public GameObject otherPortal;
+        public GameObject otherOutPosition;
+        public GameObject thisOutPosition;
         public Image cameraImage;
         public float alphaChangedSpeed = 0.02f;
 
-        public bool isCameraImageChanging = false;
+        public Vector3 outPositionVector3;
+        private bool isCameraImageChanging = false;
         private bool isup;
-        // Use this for initialization
+
         void Start()
         {
-
+            thisOutPosition.transform.localPosition = outPositionVector3;
         }
 
         // Update is called once per frame
@@ -80,10 +82,17 @@ namespace Player
         private void ChangePosition()
         {
             var m_player = GameObject.FindGameObjectWithTag("Player");
-            m_player.transform.position = otherPortal.transform.position + new Vector3(0, 0, 0.15f);
-            m_player.transform.LookAt(otherPortal.transform.position + new Vector3(0, 0, 0.4f));
+            var directionVector = otherOutPosition.transform.position - otherOutPosition.transform.parent.position;
+            Debug.Log(Vector3.Angle(directionVector, Vector3.right));
+            m_player.transform.LookAt(otherOutPosition.transform);
+            m_player.transform.position = otherOutPosition.transform.position;
+
         }
 
+        public bool GetIsCameraImageChanging()
+        {
+            return isCameraImageChanging;
+        }
     }
 
 }

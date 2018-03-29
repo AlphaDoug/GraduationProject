@@ -1,9 +1,13 @@
-﻿using System.Collections;
+﻿using Player;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    public GameObject FPSController;
+    public GameObject portalGroup;
     public GameObject[] maskObjs;
     /// <summary>
     /// 下一个场景的index
@@ -11,11 +15,68 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private int nextSceneIndex;
     private int currentIndex;
-	// Use this for initialization
-	void Start ()
+    private OOFormArray mForm = null;
+    /// <summary>
+    /// 传送门属性类
+    /// </summary>
+    public class PortalAttributes
     {
+        public int PortalGroup;
+        public string Position
+        {
+            set
+            {
+                position = new Vector3(float.Parse(value.Split(',')[0]), float.Parse(value.Split(',')[1]), float.Parse(value.Split(',')[2]));
+            }
+        }
+        public string Rotation
+        {
+            set
+            {
+                rotation = new Vector3(float.Parse(value.Split(',')[0]), float.Parse(value.Split(',')[1]), float.Parse(value.Split(',')[2]));
+            }
+        }
+        public string OutLocalPosition
+        {
+            set
+            {
+                outLocalPosition = new Vector3(float.Parse(value.Split(',')[0]), float.Parse(value.Split(',')[1]), float.Parse(value.Split(',')[2]));
+            }
+        }
+        public string Scale
+        {
+            set
+            {
+                scale = new Vector3(float.Parse(value.Split(',')[0]), float.Parse(value.Split(',')[1]), float.Parse(value.Split(',')[2]));
+            }
+        }
+
+
+        public Vector3 position;
+        public Vector3 rotation;
+        public Vector3 outLocalPosition;
+        public Vector3 scale;
+    }
+
+    // Use this for initialization
+    void Start ()
+    {
+        #region 加载TbPortals属性表
+        if (mForm == null)
+        {
+            mForm = OOFormArray.ReadFromResources("Data/Tables/TbPortals");
+        }
+        #endregion
+        for (int i = 1; i < mForm.mRowCount; i += 2)
+        {
+            //生成传送门组中的两个传送门
+            PortalAttributes portalAttributes_1 = mForm.GetObject<PortalAttributes>(i);
+            PortalAttributes portalAttributes_2 = mForm.GetObject<PortalAttributes>(i + 1);
+            CreatePortal(portalAttributes_1, portalAttributes_2);
+        }
         currentIndex = 0;
         maskObjs[currentIndex].SetActive(true);
+        FPSController.GetComponent<FirstPersonController>().portals = GameObject.FindObjectsOfType<Portal>();
     }
 	
 	// Update is called once per frame
@@ -23,6 +84,33 @@ public class GameController : MonoBehaviour
     {
 		
 	}
+
+    private void CreatePortal(PortalAttributes p1,PortalAttributes p2)
+    {
+        var portalPrefab = (GameObject)Resources.Load("Prefab/Portal");
+        var portal = Instantiate(portalPrefab) as GameObject;
+        portal.name = "Portal";
+        portal.transform.parent = portalGroup.transform;
+        foreach (Transform child in portal.transform)
+        {
+            if (child.gameObject.name == "Portal_1")
+            {
+                child.gameObject.GetComponent<Portal>().cameraImage = GameObject.FindGameObjectWithTag("CameraImage").GetComponent<Image>();
+                child.localPosition = p1.position;
+                child.localEulerAngles = p1.rotation;
+                child.gameObject.GetComponent<Portal>().outPositionVector3 = p1.outLocalPosition;
+                child.localScale = p1.scale;
+            }
+            if (child.gameObject.name == "Portal_2")
+            {
+                child.gameObject.GetComponent<Portal>().cameraImage = GameObject.FindGameObjectWithTag("CameraImage").GetComponent<Image>();
+                child.localPosition = p2.position;
+                child.localEulerAngles = p2.rotation;
+                child.gameObject.GetComponent<Portal>().outPositionVector3 = p2.outLocalPosition;
+                child.localScale = p2.scale;
+            }
+        }
+    }
 
     public void SetNextGroupTrue()
     {
@@ -50,4 +138,6 @@ public class GameController : MonoBehaviour
         loading.GetComponent<RectTransform>().localScale = Vector2.one;
         loading.GetComponent<RectTransform>().localRotation = new Quaternion();
     }
+
+
 }
