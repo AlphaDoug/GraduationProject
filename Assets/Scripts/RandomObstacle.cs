@@ -55,50 +55,66 @@ public class RandomObstacle : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
+
         for (int i = 0; i < obstacleAttributesList.Count; i++)
         {
+            //加载一个障碍物资源
+            var obstaclePrefab = (GameObject)Resources.Load(obstacleAttributesList[i].Path);
+            var obstacle = Instantiate(obstaclePrefab) as GameObject;
+            obstacle.transform.parent = gameObject.transform;
+            //obstacle.transform.localScale = new Vector3(1, 1, 1);
+            Random:
             //在指定区域内随机生成一个点
             float randomX = Random.Range(randomArea[0].x, randomArea[1].x);
             float randomY = Random.Range(randomArea[0].y, randomArea[1].y);
-            Vector3 randomPosition_0 = new Vector3(randomX, 0, randomY);
-            Vector3 randomPosition_1 = new Vector3(randomX, 0.04f, randomY);
-            Vector3 randomPosition_2 = new Vector3(randomX, 0.08f, randomY);
+            Vector3 randomPosition_0 = new Vector3(randomX, obstacle.transform.position.y, randomY) + transform.position;
+            Vector3 randomPosition_1 = new Vector3(randomX, obstacle.transform.position.y + 0.04f, randomY) + transform.position;
+            Vector3 randomPosition_2 = new Vector3(randomX, obstacle.transform.position.y + 0.08f, randomY) + transform.position;
             //检测此障碍物放置在当前位置是否会和其他障碍物重合 
             int angel = 0;
             for (int j = 0; j < 12; j++)
             {
                 Ray ray_0 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0, Mathf.Sin(angel)));
                 RaycastHit hit_0;
-                if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
+                if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius * 5))
                 {
                     // 如果射线与平面碰撞，打印碰撞物体信息  
                     Debug.Log("碰撞对象: " + hit_0.collider.name);
                     // 在场景视图中绘制射线  
                     Debug.DrawLine(ray_0.origin, hit_0.point, Color.red);
+                    goto Random;
                 }
 
                 Ray ray_1 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.04f, Mathf.Sin(angel)));
                 RaycastHit hit_1;
-                if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
+                if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius * 5))
                 {
                     // 如果射线与平面碰撞，打印碰撞物体信息  
                     Debug.Log("碰撞对象: " + hit_1.collider.name);
                     // 在场景视图中绘制射线  
                     Debug.DrawLine(ray_1.origin, hit_1.point, Color.red);
+                    goto Random;
                 }
 
                 Ray ray_2 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.08f, Mathf.Sin(angel)));
                 RaycastHit hit_2;
-                if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
+                if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius * 5))
                 {
                     // 如果射线与平面碰撞，打印碰撞物体信息  
                     Debug.Log("碰撞对象: " + hit_2.collider.name);
                     // 在场景视图中绘制射线  
                     Debug.DrawLine(ray_2.origin, hit_2.point, Color.red);
+                    goto Random;
                 }
+
                 angel += 30;
             }
-
+            //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物
+            if (angel == 360)
+            {
+                obstacle.transform.position = randomPosition_0;
+            }
+            
         }
 	}
 	
