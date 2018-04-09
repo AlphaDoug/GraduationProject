@@ -290,6 +290,7 @@ namespace Player
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {
+            //Debug.Log("111111111111");
             Rigidbody body = hit.collider.attachedRigidbody;
             //dont move the rigidbody if the character is on top of it
             if (m_CollisionFlags == CollisionFlags.Below)
@@ -303,5 +304,7 @@ namespace Player
             }
             body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
         }
+
+    
     }
 }
