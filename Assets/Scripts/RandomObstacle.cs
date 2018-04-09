@@ -62,7 +62,7 @@ public class RandomObstacle : MonoBehaviour
             var obstaclePrefab = (GameObject)Resources.Load(obstacleAttributesList[i].Path);
             var obstacle = Instantiate(obstaclePrefab) as GameObject;
             obstacle.transform.parent = gameObject.transform;
-            //obstacle.transform.localScale = new Vector3(1, 1, 1);
+            obstacle.transform.localScale = new Vector3(1, 1, 1);
             Random:
             //在指定区域内随机生成一个点
             float randomX = Random.Range(randomArea[0].x, randomArea[1].x);
@@ -76,7 +76,7 @@ public class RandomObstacle : MonoBehaviour
             {
                 Ray ray_0 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0, Mathf.Sin(angel)));
                 RaycastHit hit_0;
-                if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius * 5))
+                if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
                 {
                     // 如果射线与平面碰撞，打印碰撞物体信息  
                     Debug.Log("碰撞对象: " + hit_0.collider.name);
@@ -87,7 +87,7 @@ public class RandomObstacle : MonoBehaviour
 
                 Ray ray_1 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.04f, Mathf.Sin(angel)));
                 RaycastHit hit_1;
-                if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius * 5))
+                if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
                 {
                     // 如果射线与平面碰撞，打印碰撞物体信息  
                     Debug.Log("碰撞对象: " + hit_1.collider.name);
@@ -98,7 +98,7 @@ public class RandomObstacle : MonoBehaviour
 
                 Ray ray_2 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.08f, Mathf.Sin(angel)));
                 RaycastHit hit_2;
-                if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius * 5))
+                if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius ))
                 {
                     // 如果射线与平面碰撞，打印碰撞物体信息  
                     Debug.Log("碰撞对象: " + hit_2.collider.name);
