@@ -34,7 +34,8 @@ public class RandomObstacle : MonoBehaviour
     /// </summary>
     [SerializeField]
     private Vector2[] randomArea = { new Vector2(-3, -3), new Vector2(3, 3)};
-
+    [SerializeField]
+    private int totalNum;
     private OOFormArray mForm = null;
     private List<ObstacleAttributes> obstacleAttributesList = new List<ObstacleAttributes>();
     private void Awake()
@@ -46,9 +47,9 @@ public class RandomObstacle : MonoBehaviour
         }
         #endregion
 
-        for (int i = 1; i < mForm.mRowCount; i++)
+        for (int i = 0; i < totalNum; i++)
         {
-            var obstacleAttributes = mForm.GetObject<ObstacleAttributes>(i);
+            var obstacleAttributes = mForm.GetObject<ObstacleAttributes>(Random.Range(1,mForm.mRowCount - 1));
             obstacleAttributesList.Add(obstacleAttributes);
         }
     }
@@ -109,10 +110,11 @@ public class RandomObstacle : MonoBehaviour
 
                 angel += 30;
             }
-            //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物
+            //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物并随机旋转
             if (angel == 360)
             {
                 obstacle.transform.position = randomPosition_0;
+                obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
             }
             
         }
