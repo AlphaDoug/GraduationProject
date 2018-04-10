@@ -32,10 +32,10 @@ public class RandomObstacle : MonoBehaviour
     /// <summary>
     /// 随机生成障碍物的区域
     /// </summary>
-    [SerializeField]
     private Vector2[] randomArea = { new Vector2(-3, -3), new Vector2(3, 3)};
-
+    private int totalNum;
     private OOFormArray mForm = null;
+    private OOFormArray mForm1 = null;
     private List<ObstacleAttributes> obstacleAttributesList = new List<ObstacleAttributes>();
     private void Awake()
     {
@@ -46,11 +46,23 @@ public class RandomObstacle : MonoBehaviour
         }
         #endregion
 
-        for (int i = 1; i < mForm.mRowCount; i++)
+        #region 加载TbSceneConfig属性表
+        if (mForm1 == null)
         {
-            var obstacleAttributes = mForm.GetObject<ObstacleAttributes>(i);
+            mForm1 = OOFormArray.ReadFromResources("Data/Tables/TbSceneConfig");
+        }
+        #endregion
+
+        randomArea[0] = new Vector2(float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[0].Split(',')[0]), float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[0].Split(',')[1]));
+        randomArea[1] = new Vector2(float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[1].Split(',')[0]), float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[1].Split(',')[1]));
+        totalNum = mForm1.GetInt("ObstacleNum", "0");
+
+        for (int i = 0; i < totalNum; i++)
+        {
+            var obstacleAttributes = mForm.GetObject<ObstacleAttributes>(Random.Range(1, mForm.mRowCount - 1));
             obstacleAttributesList.Add(obstacleAttributes);
         }
+
     }
     // Use this for initialization
     void Start ()
@@ -109,10 +121,11 @@ public class RandomObstacle : MonoBehaviour
 
                 angel += 30;
             }
-            //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物
+            //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物并随机旋转
             if (angel == 360)
             {
                 obstacle.transform.position = randomPosition_0;
+                obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
             }
             
         }
