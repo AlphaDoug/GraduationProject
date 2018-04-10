@@ -32,11 +32,10 @@ public class RandomObstacle : MonoBehaviour
     /// <summary>
     /// 随机生成障碍物的区域
     /// </summary>
-    [SerializeField]
     private Vector2[] randomArea = { new Vector2(-3, -3), new Vector2(3, 3)};
-    [SerializeField]
     private int totalNum;
     private OOFormArray mForm = null;
+    private OOFormArray mForm1 = null;
     private List<ObstacleAttributes> obstacleAttributesList = new List<ObstacleAttributes>();
     private void Awake()
     {
@@ -47,11 +46,23 @@ public class RandomObstacle : MonoBehaviour
         }
         #endregion
 
+        #region 加载TbSceneConfig属性表
+        if (mForm1 == null)
+        {
+            mForm1 = OOFormArray.ReadFromResources("Data/Tables/TbSceneConfig");
+        }
+        #endregion
+
+        randomArea[0] = new Vector2(float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[0].Split(',')[0]), float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[0].Split(',')[1]));
+        randomArea[1] = new Vector2(float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[1].Split(',')[0]), float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[1].Split(',')[1]));
+        totalNum = mForm1.GetInt("ObstacleNum", "0");
+
         for (int i = 0; i < totalNum; i++)
         {
-            var obstacleAttributes = mForm.GetObject<ObstacleAttributes>(Random.Range(1,mForm.mRowCount - 1));
+            var obstacleAttributes = mForm.GetObject<ObstacleAttributes>(Random.Range(1, mForm.mRowCount - 1));
             obstacleAttributesList.Add(obstacleAttributes);
         }
+
     }
     // Use this for initialization
     void Start ()
