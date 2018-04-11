@@ -28,38 +28,89 @@ public class RandomObstacle : MonoBehaviour
         /// 障碍物是否在场景中出现
         /// </summary>
         public bool isAppear = false;
+        /// <summary>
+        /// 此障碍物上是否挂有收集物
+        /// </summary>
+        public bool IsHaveCollection = false;
+        /// <summary>
+        /// 此障碍物上是否挂有目标位置
+        /// </summary>
+        public bool IsHaveTargetPosition = false;
+        /// <summary>
+        /// 此障碍物属性是否为收集物
+        /// </summary>
+        public bool IsCollection = false;
     }
     /// <summary>
-    /// 随机生成障碍物的区域
+    /// 随机生成障碍物的区域,读配置表
     /// </summary>
     private Vector2[] randomArea = { new Vector2(-3, -3), new Vector2(3, 3)};
+    /// <summary>
+    /// 场景中障碍物的总数,读配置表
+    /// </summary>
     private int totalNum;
-    private OOFormArray mForm = null;
-    private OOFormArray mForm1 = null;
+    /// <summary>
+    /// 场景中的障碍收集物的数量
+    /// </summary>
+    private int obstacleCollectionNum;
+    private OOFormArray mFormTbObstacle = null;
+    private OOFormArray mFormTbSceneConfig = null;
+    /// <summary>
+    /// 存贮场景中的所有障碍物的动态数组
+    /// </summary>
     private List<ObstacleAttributes> obstacleAttributesList = new List<ObstacleAttributes>();
+    /// <summary>
+    /// 场景中所有的障碍物
+    /// </summary>
+    private List<GameObject> obstacleGameObjectList = new List<GameObject>();
+    /// <summary>
+    /// 场景中独立的收集物(不附属于任何障碍物)
+    /// </summary>
+    private List<GameObject> obstacleCollectionGameObjectList = new List<GameObject>();
     private void Awake()
     {
-        #region 加载TbPortals属性表
-        if (mForm == null)
+        #region 加载TbObstacle属性表
+        if (mFormTbObstacle == null)
         {
-            mForm = OOFormArray.ReadFromResources("Data/Tables/TbObstacle");
+            mFormTbObstacle = OOFormArray.ReadFromResources("Data/Tables/TbObstacle");
         }
         #endregion
 
         #region 加载TbSceneConfig属性表
-        if (mForm1 == null)
+        if (mFormTbSceneConfig == null)
         {
-            mForm1 = OOFormArray.ReadFromResources("Data/Tables/TbSceneConfig");
+            mFormTbSceneConfig = OOFormArray.ReadFromResources("Data/Tables/TbSceneConfig");
         }
         #endregion
 
-        randomArea[0] = new Vector2(float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[0].Split(',')[0]), float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[0].Split(',')[1]));
-        randomArea[1] = new Vector2(float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[1].Split(',')[0]), float.Parse(mForm1.GetString("RandomArea", "0").Split('|')[1].Split(',')[1]));
-        totalNum = mForm1.GetInt("ObstacleNum", "0");
 
+
+        randomArea[0] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea", "0").Split('|')[0].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea", "0").Split('|')[0].Split(',')[1]));
+        randomArea[1] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea", "0").Split('|')[1].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea", "0").Split('|')[1].Split(',')[1]));
+        totalNum = mFormTbSceneConfig.GetInt("ObstacleNum", "0");
+        obstacleCollectionNum = mFormTbSceneConfig.GetInt("ObstacleNum", "0");
         for (int i = 0; i < totalNum; i++)
         {
-            var obstacleAttributes = mForm.GetObject<ObstacleAttributes>(Random.Range(1, mForm.mRowCount - 1));
+            var obstacleAttributes = mFormTbObstacle.GetObject<ObstacleAttributes>(Random.Range(1, mFormTbObstacle.mRowCount - 1));
+            if (!obstacleAttributes.IsCollection)
+            {
+                obstacleAttributesList.Add(obstacleAttributes);
+            }
+            else
+            {
+                i--;
+            }
+        }
+        for (int i = 0; i < obstacleCollectionNum; i++)
+        {
+            var obstacleAttributes = new ObstacleAttributes();
+            obstacleAttributes.Name = "Collection_Chest_Position";
+            obstacleAttributes.isAppear = false;
+            obstacleAttributes.IsCollection = true;
+            obstacleAttributes.IsHaveCollection = false;
+            obstacleAttributes.IsHaveTargetPosition = false;
+            obstacleAttributes.Path = mFormTbObstacle.GetString("Path", "Collection_Chest_Position");
+            obstacleAttributes.Redius = mFormTbObstacle.GetFloat("Redius", "Collection_Chest_Position");
             obstacleAttributesList.Add(obstacleAttributes);
         }
 
@@ -91,9 +142,7 @@ public class RandomObstacle : MonoBehaviour
                 if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
                 {
                     // 如果射线与平面碰撞，打印碰撞物体信息  
-                    Debug.Log("碰撞对象: " + hit_0.collider.name);
-                    // 在场景视图中绘制射线  
-                    Debug.DrawLine(ray_0.origin, hit_0.point, Color.red);
+                    Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
                     goto Random;
                 }
 
@@ -102,9 +151,7 @@ public class RandomObstacle : MonoBehaviour
                 if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
                 {
                     // 如果射线与平面碰撞，打印碰撞物体信息  
-                    Debug.Log("碰撞对象: " + hit_1.collider.name);
-                    // 在场景视图中绘制射线  
-                    Debug.DrawLine(ray_1.origin, hit_1.point, Color.red);
+                    Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
                     goto Random;
                 }
 
@@ -113,9 +160,7 @@ public class RandomObstacle : MonoBehaviour
                 if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius ))
                 {
                     // 如果射线与平面碰撞，打印碰撞物体信息  
-                    Debug.Log("碰撞对象: " + hit_2.collider.name);
-                    // 在场景视图中绘制射线  
-                    Debug.DrawLine(ray_2.origin, hit_2.point, Color.red);
+                    Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
                     goto Random;
                 }
 
@@ -127,13 +172,54 @@ public class RandomObstacle : MonoBehaviour
                 obstacle.transform.position = randomPosition_0;
                 obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
             }
-            
+            //将障碍物分类,并将收集物属性的障碍物隐藏
+            if (obstacleAttributesList[i].IsCollection)
+            {
+                obstacleCollectionGameObjectList.Add(obstacle);
+            }
+            else
+            {
+                obstacleGameObjectList.Add(obstacle);
+            }
         }
-	}
+
+    }
 	
 	// Update is called once per frame
 	void Update ()
     {
 		
 	}
+    /// <summary>
+    ///  获取场景中的障碍物
+    /// </summary>
+    /// <returns>返回一个GameObject类型的动态数组</returns>
+    public List<GameObject> GetObstacleGameObject()
+    {
+        if (obstacleGameObjectList.Count == 0)
+        {
+            Debug.LogError("场景中没有障碍物,获取失败");
+            return null;
+        }
+        else 
+        {
+            return obstacleGameObjectList;
+        }
+    }
+    /// <summary>
+    /// 获取场景中为障碍物的收集物
+    /// </summary>
+    /// <returns>返回一个GameObject类型的动态数组</returns>
+    public List<GameObject> GetObstacleCollectionGameObject()
+    {
+        if (obstacleCollectionGameObjectList.Count == 0)
+        {
+            Debug.LogError("场景中没有障碍属性的收集物,获取失败");
+            return null;
+        }
+        else
+        {
+            return obstacleCollectionGameObjectList;
+        }
+    }
 }
