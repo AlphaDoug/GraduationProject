@@ -40,11 +40,19 @@ public class RandomObstacle : MonoBehaviour
         /// 此障碍物属性是否为收集物
         /// </summary>
         public bool IsCollection = false;
+        /// <summary>
+        /// 此障碍物所属区域
+        /// </summary>
+        public int Area;
     }
     /// <summary>
     /// 随机生成障碍物的区域,读配置表
     /// </summary>
-    private Vector2[] randomArea = { new Vector2(-3, -3), new Vector2(3, 3)};
+    private Vector2[] randomArea0 = { new Vector2(0, 0), new Vector2(0, 0) };
+    private Vector2[] randomArea1 = { new Vector2(0, 0), new Vector2(0, 0) };
+    private Vector2[] randomArea2 = { new Vector2(0, 0), new Vector2(0, 0) };
+    private Vector2[] randomArea3 = { new Vector2(0, 0), new Vector2(0, 0) };
+    private Vector2[] randomArea4 = { new Vector2(0, 0), new Vector2(0, 0) };
     /// <summary>
     /// 场景中障碍物的总数,读配置表
     /// </summary>
@@ -67,6 +75,11 @@ public class RandomObstacle : MonoBehaviour
     /// 场景中独立的收集物(不附属于任何障碍物)
     /// </summary>
     private List<GameObject> obstacleCollectionGameObjectList = new List<GameObject>();
+    /// <summary>
+    /// 四个区域
+    /// </summary>
+    private GameObject area1, area2, area3, area4;
+
     private void Awake()
     {
         #region 加载TbObstacle属性表
@@ -83,12 +96,29 @@ public class RandomObstacle : MonoBehaviour
         }
         #endregion
 
+        #region 读取场景中的区域
+        randomArea0[0] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea0", "0").Split('|')[0].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea0", "0").Split('|')[0].Split(',')[1]));
+        randomArea0[1] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea0", "0").Split('|')[1].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea0", "0").Split('|')[1].Split(',')[1]));
 
+        randomArea1[0] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea1", "0").Split('|')[0].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea1", "0").Split('|')[0].Split(',')[1]));
+        randomArea1[1] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea1", "0").Split('|')[1].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea1", "0").Split('|')[1].Split(',')[1]));
 
-        randomArea[0] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea", "0").Split('|')[0].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea", "0").Split('|')[0].Split(',')[1]));
-        randomArea[1] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea", "0").Split('|')[1].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea", "0").Split('|')[1].Split(',')[1]));
+        randomArea2[0] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea2", "0").Split('|')[0].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea2", "0").Split('|')[0].Split(',')[1]));
+        randomArea2[1] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea2", "0").Split('|')[1].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea2", "0").Split('|')[1].Split(',')[1]));
+
+        randomArea3[0] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea3", "0").Split('|')[0].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea3", "0").Split('|')[0].Split(',')[1]));
+        randomArea3[1] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea3", "0").Split('|')[1].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea3", "0").Split('|')[1].Split(',')[1]));
+
+        randomArea4[0] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea4", "0").Split('|')[0].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea4", "0").Split('|')[0].Split(',')[1]));
+        randomArea4[1] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea4", "0").Split('|')[1].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea4", "0").Split('|')[1].Split(',')[1]));
+        #endregion
+
         totalNum = mFormTbSceneConfig.GetInt("ObstacleNum", "0");
         obstacleCollectionNum = mFormTbSceneConfig.GetInt("ObstacleNum", "0");
+        area1 = GameObject.FindGameObjectWithTag("Area1");
+        area2 = GameObject.FindGameObjectWithTag("Area2");
+        area3 = GameObject.FindGameObjectWithTag("Area3");
+        area4 = GameObject.FindGameObjectWithTag("Area4");
         for (int i = 0; i < totalNum; i++)
         {
             var obstacleAttributes = mFormTbObstacle.GetObject<ObstacleAttributes>(Random.Range(1, mFormTbObstacle.mRowCount - 1));
@@ -116,62 +146,227 @@ public class RandomObstacle : MonoBehaviour
 
     }
     // Use this for initialization
-    void Start ()
+    void Start()
     {
-
+        float randomX, randomY;
+        Vector3 randomPosition_0, randomPosition_1, randomPosition_2;
+        int angel;
         for (int i = 0; i < obstacleAttributesList.Count; i++)
         {
+            if (obstacleAttributesList[i].IsCollection)
+            {
+                continue;
+            }
             //加载一个障碍物资源
             var obstaclePrefab = (GameObject)Resources.Load(obstacleAttributesList[i].Path);
             var obstacle = Instantiate(obstaclePrefab) as GameObject;
             obstacle.transform.parent = gameObject.transform;
             obstacle.transform.localScale = new Vector3(1, 1, 1);
-            Random:
-            //在指定区域内随机生成一个点
-            float randomX = Random.Range(randomArea[0].x, randomArea[1].x);
-            float randomY = Random.Range(randomArea[0].y, randomArea[1].y);
-            Vector3 randomPosition_0 = new Vector3(randomX, obstacle.transform.position.y, randomY) + transform.position;
-            Vector3 randomPosition_1 = new Vector3(randomX, obstacle.transform.position.y + 0.04f, randomY) + transform.position;
-            Vector3 randomPosition_2 = new Vector3(randomX, obstacle.transform.position.y + 0.08f, randomY) + transform.position;
-            //检测此障碍物放置在当前位置是否会和其他障碍物重合 
-            int angel = 0;
-            for (int j = 0; j < 12; j++)
+            //根据区域编号分类障碍物并进行分区随机生成
+
+            switch (obstacleAttributesList[i].Area)
             {
-                Ray ray_0 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0, Mathf.Sin(angel)));
-                RaycastHit hit_0;
-                if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
-                {
-                    // 如果射线与平面碰撞，打印碰撞物体信息  
-                    Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
-                    goto Random;
-                }
+                case 1:
+                    Random1:
+                    //在指定区域内随机生成一个点
+                    randomX = Random.Range(randomArea1[0].x, randomArea1[1].x);
+                    randomY = Random.Range(randomArea1[0].y, randomArea1[1].y);
+                    randomPosition_0 = new Vector3(randomX, obstacle.transform.position.y, randomY) + area1.transform.position;
+                    randomPosition_1 = new Vector3(randomX, obstacle.transform.position.y + 0.04f, randomY) + area1.transform.position;
+                    randomPosition_2 = new Vector3(randomX, obstacle.transform.position.y + 0.08f, randomY) + area1.transform.position;
+                    //检测此障碍物放置在当前位置是否会和其他障碍物重合 
+                    angel = 0;
+                    for (int j = 0; j < 12; j++)
+                    {
+                        Ray ray_0 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0, Mathf.Sin(angel)));
+                        RaycastHit hit_0;
+                        if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
+                            goto Random1;
+                        }
 
-                Ray ray_1 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.04f, Mathf.Sin(angel)));
-                RaycastHit hit_1;
-                if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
-                {
-                    // 如果射线与平面碰撞，打印碰撞物体信息  
-                    Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
-                    goto Random;
-                }
+                        Ray ray_1 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.04f, Mathf.Sin(angel)));
+                        RaycastHit hit_1;
+                        if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
+                            goto Random1;
+                        }
 
-                Ray ray_2 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.08f, Mathf.Sin(angel)));
-                RaycastHit hit_2;
-                if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius ))
-                {
-                    // 如果射线与平面碰撞，打印碰撞物体信息  
-                    Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
-                    goto Random;
-                }
+                        Ray ray_2 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.08f, Mathf.Sin(angel)));
+                        RaycastHit hit_2;
+                        if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
+                            goto Random1;
+                        }
 
-                angel += 30;
+                        angel += 30;
+                    }
+
+                    //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物并随机旋转
+                    if (angel == 360)
+                    {
+                        obstacle.transform.position = randomPosition_0;
+                        obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
+                    }
+                    break;
+                case 2:
+                    Random2:
+                    //在指定区域内随机生成一个点
+                    randomX = Random.Range(randomArea2[0].x, randomArea2[1].x);
+                    randomY = Random.Range(randomArea2[0].y, randomArea2[1].y);
+                    randomPosition_0 = new Vector3(randomX, obstacle.transform.position.y, randomY) + area2.transform.position;
+                    randomPosition_1 = new Vector3(randomX, obstacle.transform.position.y + 0.04f, randomY) + area2.transform.position;
+                    randomPosition_2 = new Vector3(randomX, obstacle.transform.position.y + 0.08f, randomY) + area2.transform.position;
+                    //检测此障碍物放置在当前位置是否会和其他障碍物重合 
+                    angel = 0;
+                    for (int j = 0; j < 12; j++)
+                    {
+                        Ray ray_0 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0, Mathf.Sin(angel)));
+                        RaycastHit hit_0;
+                        if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
+                            goto Random2;
+                        }
+
+                        Ray ray_1 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.04f, Mathf.Sin(angel)));
+                        RaycastHit hit_1;
+                        if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
+                            goto Random2;
+                        }
+
+                        Ray ray_2 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.08f, Mathf.Sin(angel)));
+                        RaycastHit hit_2;
+                        if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
+                            goto Random2;
+                        }
+
+                        angel += 30;
+                    }
+
+                    //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物并随机旋转
+                    if (angel == 360)
+                    {
+                        obstacle.transform.position = randomPosition_0;
+                        obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
+                    }
+                    break;
+                case 3:
+                    Random3:
+                    //在指定区域内随机生成一个点
+                    randomX = Random.Range(randomArea3[0].x, randomArea3[1].x);
+                    randomY = Random.Range(randomArea3[0].y, randomArea3[1].y);
+                    randomPosition_0 = new Vector3(randomX, obstacle.transform.position.y, randomY) + area3.transform.position;
+                    randomPosition_1 = new Vector3(randomX, obstacle.transform.position.y + 0.04f, randomY) + area3.transform.position;
+                    randomPosition_2 = new Vector3(randomX, obstacle.transform.position.y + 0.08f, randomY) + area3.transform.position;
+                    //检测此障碍物放置在当前位置是否会和其他障碍物重合 
+                    angel = 0;
+                    for (int j = 0; j < 12; j++)
+                    {
+                        Ray ray_0 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0, Mathf.Sin(angel)));
+                        RaycastHit hit_0;
+                        if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
+                            goto Random3;
+                        }
+
+                        Ray ray_1 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.04f, Mathf.Sin(angel)));
+                        RaycastHit hit_1;
+                        if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
+                            goto Random3;
+                        }
+
+                        Ray ray_2 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.08f, Mathf.Sin(angel)));
+                        RaycastHit hit_2;
+                        if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
+                            goto Random3;
+                        }
+
+                        angel += 30;
+                    }
+
+                    //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物并随机旋转
+                    if (angel == 360)
+                    {
+                        obstacle.transform.position = randomPosition_0;
+                        obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
+                    }
+                    break;
+                case 4:
+                    Random4:
+                    //在指定区域内随机生成一个点
+                    randomX = Random.Range(randomArea4[0].x, randomArea4[1].x);
+                    randomY = Random.Range(randomArea4[0].y, randomArea4[1].y);
+                    randomPosition_0 = new Vector3(randomX, obstacle.transform.position.y, randomY) + area4.transform.position;
+                    randomPosition_1 = new Vector3(randomX, obstacle.transform.position.y + 0.04f, randomY) + area4.transform.position;
+                    randomPosition_2 = new Vector3(randomX, obstacle.transform.position.y + 0.08f, randomY) + area4.transform.position;
+                    //检测此障碍物放置在当前位置是否会和其他障碍物重合 
+                    angel = 0;
+                    for (int j = 0; j < 12; j++)
+                    {
+                        Ray ray_0 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0, Mathf.Sin(angel)));
+                        RaycastHit hit_0;
+                        if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
+                            goto Random4;
+                        }
+
+                        Ray ray_1 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.04f, Mathf.Sin(angel)));
+                        RaycastHit hit_1;
+                        if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
+                            goto Random4;
+                        }
+
+                        Ray ray_2 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.08f, Mathf.Sin(angel)));
+                        RaycastHit hit_2;
+                        if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
+                        {
+                            // 如果射线与平面碰撞，打印碰撞物体信息  
+                            Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
+                            goto Random4;
+                        }
+
+                        angel += 30;
+                    }
+
+                    //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物并随机旋转
+                    if (angel == 360)
+                    {
+                        obstacle.transform.position = randomPosition_0;
+                        obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
+                    }
+                    break;
+                default:
+
+                    break;
             }
-            //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物并随机旋转
-            if (angel == 360)
-            {
-                obstacle.transform.position = randomPosition_0;
-                obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
-            }
+
             //将障碍物分类,并将收集物属性的障碍物隐藏
             if (obstacleAttributesList[i].IsCollection)
             {
@@ -182,14 +377,72 @@ public class RandomObstacle : MonoBehaviour
                 obstacleGameObjectList.Add(obstacle);
             }
         }
+        for (int i = 0; i < obstacleAttributesList.Count; i++)
+        {
+            if (obstacleAttributesList[i].IsCollection)
+            {
+                //加载一个障碍物资源
+                var obstaclePrefab = (GameObject)Resources.Load(obstacleAttributesList[i].Path);
+                var obstacle = Instantiate(obstaclePrefab) as GameObject;
+                obstacle.transform.parent = gameObject.transform;
+                obstacle.transform.localScale = new Vector3(1, 1, 1);
+                Random0:
+                //在指定区域内随机生成一个点
+                randomX = Random.Range(randomArea0[0].x, randomArea0[1].x);
+                randomY = Random.Range(randomArea0[0].y, randomArea0[1].y);
+                randomPosition_0 = new Vector3(randomX, obstacle.transform.position.y, randomY) + transform.position;
+                randomPosition_1 = new Vector3(randomX, obstacle.transform.position.y + 0.04f, randomY) + transform.position;
+                randomPosition_2 = new Vector3(randomX, obstacle.transform.position.y + 0.08f, randomY) + transform.position;
+                //检测此障碍物放置在当前位置是否会和其他障碍物重合 
+                angel = 0;
+                for (int j = 0; j < 12; j++)
+                {
+                    Ray ray_0 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0, Mathf.Sin(angel)));
+                    RaycastHit hit_0;
+                    if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
+                    {
+                        // 如果射线与平面碰撞，打印碰撞物体信息  
+                        Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
+                        goto Random0;
+                    }
+
+                    Ray ray_1 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.04f, Mathf.Sin(angel)));
+                    RaycastHit hit_1;
+                    if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
+                    {
+                        // 如果射线与平面碰撞，打印碰撞物体信息  
+                        Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
+                        goto Random0;
+                    }
+
+                    Ray ray_2 = new Ray(randomPosition_0, new Vector3(Mathf.Cos(angel), 0.08f, Mathf.Sin(angel)));
+                    RaycastHit hit_2;
+                    if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
+                    {
+                        // 如果射线与平面碰撞，打印碰撞物体信息  
+                        Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
+                        goto Random0;
+                    }
+
+                    angel += 30;
+                }
+
+                //确定此位置不会和其他障碍物重合,将此位置坐标赋给次障碍物并随机旋转
+                if (angel == 360)
+                {
+                    obstacle.transform.position = randomPosition_0;
+                    obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
+                }
+            }
+            
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
 
     }
-	
-	// Update is called once per frame
-	void Update ()
-    {
-		
-	}
     /// <summary>
     ///  获取场景中的障碍物
     /// </summary>
@@ -201,7 +454,7 @@ public class RandomObstacle : MonoBehaviour
             Debug.LogError("场景中没有障碍物,获取失败");
             return null;
         }
-        else 
+        else
         {
             return obstacleGameObjectList;
         }

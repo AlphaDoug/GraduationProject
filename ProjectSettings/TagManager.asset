@@ -6,6 +6,10 @@ TagManager:
   tags:
   - CameraImage
   - Collection
+  - Area1
+  - Area2
+  - Area3
+  - Area4
   layers:
   - Default
   - TransparentFX
