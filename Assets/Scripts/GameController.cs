@@ -78,12 +78,6 @@ public class GameController : MonoBehaviour
         maskObjs[currentIndex].SetActive(true);
         FPSController.GetComponent<FirstPersonController>().portals = GameObject.FindObjectsOfType<Portal>();
     }
-	
-	// Update is called once per frame
-	void Update ()
-    {
-		
-	}
 
     private void CreatePortal(PortalAttributes p1,PortalAttributes p2)
     {

@@ -44,6 +44,10 @@ public class RandomObstacle : MonoBehaviour
         /// 此障碍物所属区域
         /// </summary>
         public int Area;
+        /// <summary>
+        /// 此障碍物上目标位置的ID
+        /// </summary>
+        public int TargetID;
     }
     /// <summary>
     /// 随机生成障碍物的区域,读配置表
@@ -376,6 +380,17 @@ public class RandomObstacle : MonoBehaviour
             {
                 obstacleGameObjectList.Add(obstacle);
             }
+
+            if (obstacleAttributesList[i].IsHaveTargetPosition)
+            {
+                foreach (Transform child in obstacle.transform)
+                {
+                    if (child.gameObject.tag == "Target")
+                    {
+                        child.gameObject.GetComponent<Target>().ID = obstacleAttributesList[i].TargetID;
+                    }
+                }
+            }
         }
         for (int i = 0; i < obstacleAttributesList.Count; i++)
         {
@@ -436,6 +451,7 @@ public class RandomObstacle : MonoBehaviour
             }
             
         }
+
     }
 
     // Update is called once per frame
@@ -473,6 +489,19 @@ public class RandomObstacle : MonoBehaviour
         else
         {
             return obstacleCollectionGameObjectList;
+        }
+    }
+
+    public List<ObstacleAttributes> GetObstacleAttributes()
+    {
+        if (obstacleAttributesList.Count == 0)
+        {
+            Debug.LogError("场景中没有障碍属性的收集物,获取失败");
+            return null;
+        }
+        else
+        {
+            return obstacleAttributesList;
         }
     }
 }
