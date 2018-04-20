@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Target : MonoBehaviour
 {
-    public delegate void ReachOnePosition();
+    public delegate void ReachOnePosition(int id ,string des);
     public static event ReachOnePosition ReachOnePositionEvent;
 
     public int ID;
@@ -19,12 +19,17 @@ public class Target : MonoBehaviour
     {
 		
 	}
+
+    /// <summary>
+    /// 到达指定位置
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
         {
             gameObject.SetActive(false);
-            ReachOnePositionEvent();
+            ReachOnePositionEvent(-1, "");
         }
     }
 }

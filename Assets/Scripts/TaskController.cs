@@ -99,8 +99,8 @@ public class TaskController : MonoBehaviour
         {
             targetGameobject[i].SetActive(false);
         }
-        //初始化首个收集物
-        InitializeOneCollection();
+        //初始化首个任务
+        CollectionEvent(-1,"");
         //绑定收集事件
         Collection.CollectOneThingEvent += CollectionEvent;
         Target.ReachOnePositionEvent += CollectionEvent;
@@ -116,10 +116,10 @@ public class TaskController : MonoBehaviour
     /// <summary>
     /// 一个收集物被收集后触发
     /// </summary>
-    private void CollectionEvent()
+    private void CollectionEvent(int id ,string des)
     {
         Debug.Log("收集一个");
-        switch (Random.Range(0,2))
+        switch (Random.Range(0,1))
         {
             case 0:
                 //收集
@@ -144,6 +144,8 @@ public class TaskController : MonoBehaviour
 
         var collectionPrefab = (GameObject)Resources.Load(randomCollectionAttribute.Path);
         var collection = Instantiate(collectionPrefab) as GameObject;
+        collection.GetComponent<Collection>().ID = randomCollectionAttribute.ID;
+        collection.GetComponent<Collection>().DES = randomCollectionAttribute.DES;
         collection.transform.parent = obstacleCollectionGameObject[Random.Range(0, obstacleCollectionGameObject.Length)].transform;
         collection.transform.localPosition = Vector3.zero;
         taskUITitle.GetComponent<Text>().text = "任务:收集宝箱";
