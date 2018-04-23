@@ -48,6 +48,10 @@ public class RandomObstacle : MonoBehaviour
         /// 此障碍物上目标位置的ID
         /// </summary>
         public int TargetID;
+        /// <summary>
+        /// 此障碍物重新生成的次数限制
+        /// </summary>
+        public int RandomTimes;
     }
     /// <summary>
     /// 随机生成障碍物的区域,读配置表
@@ -145,6 +149,7 @@ public class RandomObstacle : MonoBehaviour
             obstacleAttributes.IsHaveTargetPosition = false;
             obstacleAttributes.Path = mFormTbObstacle.GetString("Path", "Collection_Chest_Position");
             obstacleAttributes.Redius = mFormTbObstacle.GetFloat("Redius", "Collection_Chest_Position");
+            obstacleAttributes.RandomTimes = mFormTbObstacle.GetInt("RandomTimes", "Collection_Chest_Position");
             obstacleAttributesList.Add(obstacleAttributes);
         }
 
@@ -166,12 +171,23 @@ public class RandomObstacle : MonoBehaviour
             var obstacle = Instantiate(obstaclePrefab) as GameObject;
             obstacle.transform.parent = gameObject.transform;
             obstacle.transform.localScale = new Vector3(1, 1, 1);
+            var randomTimes = obstacleAttributesList[i].RandomTimes;
+            int currentTimes = 0;
             //根据区域编号分类障碍物并进行分区随机生成
 
             switch (obstacleAttributesList[i].Area)
             {
+                //在区域1中
                 case 1:
                     Random1:
+                    currentTimes++;
+                    //若循环次数大于设定值,则此障碍物不会生成
+                    if (currentTimes > randomTimes)
+                    {
+                        Destroy(obstacle);
+                        Debug.LogError("障碍物:" + obstacle.gameObject.name + "未生成");
+                        continue;
+                    }
                     //在指定区域内随机生成一个点
                     randomX = Random.Range(randomArea1[0].x, randomArea1[1].x);
                     randomY = Random.Range(randomArea1[0].y, randomArea1[1].y);
@@ -187,7 +203,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
+                           // Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
                             goto Random1;
                         }
 
@@ -196,7 +212,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
+                           // Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
                             goto Random1;
                         }
 
@@ -205,7 +221,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
+                           // Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
                             goto Random1;
                         }
 
@@ -217,10 +233,20 @@ public class RandomObstacle : MonoBehaviour
                     {
                         obstacle.transform.position = randomPosition_0;
                         obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
+                        Debug.Log("障碍物:" + obstacle.gameObject.name + "经过" + "<color=#00EEEE>" + currentTimes + "</color>" + "次后成功生成");
                     }
                     break;
+                //在区域2中
                 case 2:
                     Random2:
+                    currentTimes++;
+                    //若循环次数大于设定值,则此障碍物不会生成
+                    if (currentTimes > randomTimes)
+                    {
+                        Destroy(obstacle);
+                        Debug.LogError("障碍物:" + obstacle.gameObject.name + "未生成");
+                        continue;
+                    }
                     //在指定区域内随机生成一个点
                     randomX = Random.Range(randomArea2[0].x, randomArea2[1].x);
                     randomY = Random.Range(randomArea2[0].y, randomArea2[1].y);
@@ -236,7 +262,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
+                            //Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
                             goto Random2;
                         }
 
@@ -245,7 +271,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
+                            //Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
                             goto Random2;
                         }
 
@@ -254,7 +280,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
+                            //Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
                             goto Random2;
                         }
 
@@ -266,10 +292,20 @@ public class RandomObstacle : MonoBehaviour
                     {
                         obstacle.transform.position = randomPosition_0;
                         obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
+                        Debug.Log("障碍物:" + obstacle.gameObject.name + "经过" + "<color=#00EEEE>" + currentTimes + "</color>" + "次后成功生成");
                     }
                     break;
+                //在区域3中
                 case 3:
                     Random3:
+                    currentTimes++;
+                    //若循环次数大于设定值,则此障碍物不会生成
+                    if (currentTimes > randomTimes)
+                    {
+                        Destroy(obstacle);
+                        Debug.LogError("障碍物:" + obstacle.gameObject.name + "未生成");
+                        continue;
+                    }
                     //在指定区域内随机生成一个点
                     randomX = Random.Range(randomArea3[0].x, randomArea3[1].x);
                     randomY = Random.Range(randomArea3[0].y, randomArea3[1].y);
@@ -285,7 +321,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
+                            //Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
                             goto Random3;
                         }
 
@@ -294,7 +330,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
+                            //Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
                             goto Random3;
                         }
 
@@ -303,7 +339,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
+                           // Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
                             goto Random3;
                         }
 
@@ -315,10 +351,20 @@ public class RandomObstacle : MonoBehaviour
                     {
                         obstacle.transform.position = randomPosition_0;
                         obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
+                        Debug.Log("障碍物:" + obstacle.gameObject.name + "经过" + "<color=#00EEEE>" + currentTimes + "</color>" + "次后成功生成");
                     }
                     break;
+                //在区域4中
                 case 4:
                     Random4:
+                    currentTimes++;
+                    //若循环次数大于设定值,则此障碍物不会生成
+                    if (currentTimes > randomTimes)
+                    {
+                        Destroy(obstacle);
+                        Debug.LogError("障碍物:" + obstacle.gameObject.name + "未生成");
+                        continue;
+                    }
                     //在指定区域内随机生成一个点
                     randomX = Random.Range(randomArea4[0].x, randomArea4[1].x);
                     randomY = Random.Range(randomArea4[0].y, randomArea4[1].y);
@@ -334,7 +380,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
+                           // Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
                             goto Random4;
                         }
 
@@ -343,7 +389,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
+                           // Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
                             goto Random4;
                         }
 
@@ -352,7 +398,7 @@ public class RandomObstacle : MonoBehaviour
                         if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
                         {
                             // 如果射线与平面碰撞，打印碰撞物体信息  
-                            Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
+                           // Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
                             goto Random4;
                         }
 
@@ -364,6 +410,7 @@ public class RandomObstacle : MonoBehaviour
                     {
                         obstacle.transform.position = randomPosition_0;
                         obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
+                        Debug.Log("障碍物:" + obstacle.gameObject.name + "经过" + "<color=#00EEEE>" + currentTimes + "</color>" + "次后成功生成");
                     }
                     break;
                 default:
@@ -401,7 +448,17 @@ public class RandomObstacle : MonoBehaviour
                 var obstacle = Instantiate(obstaclePrefab) as GameObject;
                 obstacle.transform.parent = gameObject.transform;
                 obstacle.transform.localScale = new Vector3(1, 1, 1);
+                var randomTimes = obstacleAttributesList[i].RandomTimes;
+                int currentTimes = 0;
                 Random0:
+                currentTimes++;
+                //若循环次数大于设定值,则此障碍物不会生成
+                if (currentTimes > randomTimes)
+                {
+                    Destroy(obstacle);
+                    Debug.LogError("障碍物:" + obstacle.gameObject.name + "未生成");
+                    continue;
+                }
                 //在指定区域内随机生成一个点
                 randomX = Random.Range(randomArea0[0].x, randomArea0[1].x);
                 randomY = Random.Range(randomArea0[0].y, randomArea0[1].y);
@@ -417,7 +474,7 @@ public class RandomObstacle : MonoBehaviour
                     if (Physics.Raycast(ray_0, out hit_0, obstacleAttributesList[i].Redius))
                     {
                         // 如果射线与平面碰撞，打印碰撞物体信息  
-                        Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
+                       // Debug.Log("碰撞对象: " + hit_0.collider.name + "   重新随机一个位置");
                         goto Random0;
                     }
 
@@ -426,7 +483,7 @@ public class RandomObstacle : MonoBehaviour
                     if (Physics.Raycast(ray_1, out hit_1, obstacleAttributesList[i].Redius))
                     {
                         // 如果射线与平面碰撞，打印碰撞物体信息  
-                        Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
+                       // Debug.Log("碰撞对象: " + hit_1.collider.name + "   重新随机一个位置");
                         goto Random0;
                     }
 
@@ -435,7 +492,7 @@ public class RandomObstacle : MonoBehaviour
                     if (Physics.Raycast(ray_2, out hit_2, obstacleAttributesList[i].Redius))
                     {
                         // 如果射线与平面碰撞，打印碰撞物体信息  
-                        Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
+                       // Debug.Log("碰撞对象: " + hit_2.collider.name + "   重新随机一个位置");
                         goto Random0;
                     }
 
@@ -447,6 +504,7 @@ public class RandomObstacle : MonoBehaviour
                 {
                     obstacle.transform.position = randomPosition_0;
                     obstacle.transform.localEulerAngles = new Vector3(0, Random.Range(0, 360), 0);
+                    Debug.Log("障碍物:" + obstacle.gameObject.name + "经过" + "<color=#00EEEE>" + currentTimes + "</color>" + "次后成功生成");
                 }
             }
             
