@@ -62,6 +62,10 @@ public class RandomObstacle : MonoBehaviour
     private Vector2[] randomArea3 = { new Vector2(0, 0), new Vector2(0, 0) };
     private Vector2[] randomArea4 = { new Vector2(0, 0), new Vector2(0, 0) };
     /// <summary>
+    /// 子区域
+    /// </summary>
+    private List<Vector4> randomArea_Child = new List<Vector4>();
+    /// <summary>
     /// 场景中障碍物的总数,读配置表
     /// </summary>
     private int totalNum;
@@ -107,6 +111,19 @@ public class RandomObstacle : MonoBehaviour
         #region 读取场景中的区域
         randomArea0[0] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea0", "0").Split('|')[0].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea0", "0").Split('|')[0].Split(',')[1]));
         randomArea0[1] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea0", "0").Split('|')[1].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea0", "0").Split('|')[1].Split(',')[1]));
+
+        string areaStr = mFormTbSceneConfig.GetString("RandomArea_Child", "0");
+        string[] areaStrArray = areaStr.Split('|');
+        for (int i = 0; i < areaStrArray.Length; i++)
+        {
+            int x = int.Parse(areaStrArray[i].Split(',')[0]);
+            int y = int.Parse(areaStrArray[i].Split(',')[1]);
+            int z = int.Parse(areaStrArray[i].Split(',')[2]);
+            int w = int.Parse(areaStrArray[i].Split(',')[3]);
+            var childVector4 = new Vector4(x, y, z, w);
+            randomArea_Child.Add(childVector4);
+        }
+        
 
         randomArea1[0] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea1", "0").Split('|')[0].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea1", "0").Split('|')[0].Split(',')[1]));
         randomArea1[1] = new Vector2(float.Parse(mFormTbSceneConfig.GetString("RandomArea1", "0").Split('|')[1].Split(',')[0]), float.Parse(mFormTbSceneConfig.GetString("RandomArea1", "0").Split('|')[1].Split(',')[1]));
