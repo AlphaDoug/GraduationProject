@@ -119,7 +119,7 @@ public class TaskController : MonoBehaviour
     private void CollectionEvent(int id ,string des)
     {
         Debug.Log("收集一个");
-        switch (Random.Range(0,2))
+        switch (Random.Range(0,1))
         {
             case 0:
                 //收集

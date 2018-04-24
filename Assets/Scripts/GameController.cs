@@ -12,6 +12,12 @@ public class GameController : MonoBehaviour
     /// </summary>
     [SerializeField]
     private int nextSceneIndex;
+    [SerializeField]
+    private Text chest1Num;
+    [SerializeField]
+    private Text chest2Num;
+    [SerializeField]
+    private Text chest3Num;
     private int currentIndex;
     private OOFormArray mFormChestNum = null;
     private OOFormArray mFormTbCollection = null;
@@ -48,9 +54,10 @@ public class GameController : MonoBehaviour
                 mFormChestNum.SetInt(i - 1, 0, i);
                 mFormChestNum.SetString(mFormTbCollection.GetString("DES", i.ToString()), 1, i);
                 mFormChestNum.SetInt(0, 2, i);
-            }
-           
+            }        
         }
+        RefreshNum();
+
     }
     // Use this for initialization
     void Start ()
@@ -79,10 +86,20 @@ public class GameController : MonoBehaviour
         id--;
         var lastNum = mFormChestNum.GetInt("Num", id.ToString(), des);
         mFormChestNum.SetInt(lastNum + 1, "Num", id.ToString(), des);
+        RefreshNum();
     }
 
     private void OnApplicationQuit()
     {
         mFormChestNum.SaveFormFile("Assets/Resources/Data/DataStored/ChestNum.txt");
+    }
+    /// <summary>
+    /// 刷新UI显示的箱子数量
+    /// </summary>
+    private void RefreshNum()
+    {
+        chest1Num.text = mFormChestNum.GetString("DES", "0") + ": " + mFormChestNum.GetString("Num", "0") + "个";
+        chest2Num.text = mFormChestNum.GetString("DES", "1") + ": " + mFormChestNum.GetString("Num", "1") + "个";
+        chest3Num.text = mFormChestNum.GetString("DES", "2") + ": " + mFormChestNum.GetString("Num", "2") + "个";
     }
 }
