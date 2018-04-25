@@ -11,6 +11,7 @@ TagManager:
   - Area3
   - Area4
   - Target
+  - ChildArea
   layers:
   - Default
   - TransparentFX

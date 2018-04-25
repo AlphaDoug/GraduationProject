@@ -9,6 +9,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5bc611299ac384d10aeb9d92fd0fc026, type: 3}
-  m_Name: OOFormManager_0
+  m_Name: OOFormManager
   m_EditorClassIdentifier: 
   mTableList: []
