@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 762146115}
-  m_IndirectSpecularColor: {r: 0.43690947, g: 0.4845714, b: 0.56482863, a: 1}
+  m_IndirectSpecularColor: {r: 0.43690902, g: 0.48457044, b: 0.5648275, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 27552234}
   m_Layer: 0
   m_Name: Area4
-  m_TagString: Area4
+  m_TagString: ChildArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2759,7 +2759,7 @@ GameObject:
   - component: {fileID: 872592443}
   m_Layer: 0
   m_Name: Area1
-  m_TagString: Area1
+  m_TagString: ChildArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2992,7 +2992,7 @@ GameObject:
   - component: {fileID: 959622247}
   m_Layer: 0
   m_Name: Area2
-  m_TagString: Area2
+  m_TagString: ChildArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4889,7 +4889,7 @@ GameObject:
   - component: {fileID: 1814543525}
   m_Layer: 0
   m_Name: Area3
-  m_TagString: Area3
+  m_TagString: ChildArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
