@@ -18,7 +18,11 @@ namespace Player
 
         void Start()
         {
-            thisOutPosition.transform.localPosition = outPositionVector3;
+            if (thisOutPosition.transform.localPosition == Vector3.zero)
+            {
+                thisOutPosition.transform.localPosition = outPositionVector3;
+            }
+            
         }
 
         // Update is called once per frame
@@ -83,8 +87,8 @@ namespace Player
         {
             var m_player = GameObject.FindGameObjectWithTag("Player");
             var directionVector = otherOutPosition.transform.position - otherOutPosition.transform.parent.position;
-            Debug.Log(Vector3.Angle(directionVector, Vector3.right));
-            m_player.transform.LookAt(otherOutPosition.transform);
+            Debug.Log(otherOutPosition.transform.position);
+            //m_player.transform.LookAt(otherOutPosition.transform);
             m_player.transform.position = otherOutPosition.transform.position;
 
         }
