@@ -6,6 +6,13 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    public class RewardAttribute
+    {
+        public int ID;
+        public string DES;
+        public int Weight;
+        public string Path;
+    }
     public GameObject FPSController;
     /// <summary>
     /// 下一个场景的index
@@ -18,9 +25,13 @@ public class GameController : MonoBehaviour
     private Text chest2Num;
     [SerializeField]
     private Text chest3Num;
+    [SerializeField]
+    private Image showReward;
     private int currentIndex;
     private OOFormArray mFormChestNum = null;
     private OOFormArray mFormTbCollection = null;
+    private OOFormArray mFormTbReward = null;
+    private List<RewardAttribute> rewardAttributeList = new List<RewardAttribute>();
     private void Awake()
     {
         #region 读取存贮的数据
@@ -36,6 +47,19 @@ public class GameController : MonoBehaviour
             mFormTbCollection = OOFormArray.ReadFromResources("Data/Tables/TbCollection");
         }
         #endregion
+
+        #region 读取TbReward表
+        if (mFormTbReward == null)
+        {
+            mFormTbReward = OOFormArray.ReadFromResources("Data/Tables/TbRewards");
+        }
+        #endregion
+
+        for (int i = 1; i < mFormTbReward.mRowCount; i++)
+        {
+            var buff = mFormTbReward.GetObject<RewardAttribute>(i);
+            rewardAttributeList.Add(buff);
+        }
 
         if (mFormChestNum.mRowCount != mFormTbCollection.mRowCount)
         {
@@ -64,8 +88,13 @@ public class GameController : MonoBehaviour
     {
         FPSController.GetComponent<FirstPersonController>().portals = GameObject.FindObjectsOfType<Portal>();
         Collection.CollectOneThingEvent += AddOneChest;
+        ActivateChest.OpenOneChestEvent += OpenChest;
     }
-
+    private void OnDisable()
+    {
+        Collection.CollectOneThingEvent -= AddOneChest;
+        ActivateChest.OpenOneChestEvent -= OpenChest;
+    }
     public void LoadScene(int index)
     {
         var loadingPrefab = (GameObject)Resources.Load("Prefab/LoadingScene");
@@ -101,5 +130,30 @@ public class GameController : MonoBehaviour
         chest1Num.text = mFormChestNum.GetString("DES", "0") + ": " + mFormChestNum.GetString("Num", "0") + "个";
         chest2Num.text = mFormChestNum.GetString("DES", "1") + ": " + mFormChestNum.GetString("Num", "1") + "个";
         chest3Num.text = mFormChestNum.GetString("DES", "2") + ": " + mFormChestNum.GetString("Num", "2") + "个";
+    }
+
+    private void OpenChest(int id,string des)
+    {
+        Debug.Log("箱子ID" + id + "名称" + des + "被打开");
+        //开箱子给予的东西
+        int totalWeight = 0;
+        for (int i = 0; i < rewardAttributeList.Count; i++)
+        {
+            totalWeight += rewardAttributeList[i].Weight;
+        }
+        int randomNum = Random.Range(0, totalWeight);
+        int comparisonNum = 0;
+        for (int i = 0; i < rewardAttributeList.Count; i++)
+        {
+            comparisonNum += rewardAttributeList[i].Weight;
+            if (comparisonNum > randomNum)
+            {
+                Debug.Log("奖励名称为" + rewardAttributeList[i].DES);
+                showReward.gameObject.SetActive(true);
+                showReward.sprite = Resources.Load(rewardAttributeList[i].Path, typeof(Sprite)) as Sprite;
+                break;
+            }
+        }
+
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class OpenChest : MonoBehaviour
 {
+
     [SerializeField]
     private GameObject[] chestPosition;
     private OOFormArray mFormTbCollection = null;
@@ -28,6 +29,11 @@ public class OpenChest : MonoBehaviour
         {
             var collectionPrefab = (GameObject)Resources.Load(collectionAttribute[i].Path);
             var collection = Instantiate(collectionPrefab) as GameObject;
+            collection.transform.parent = chestPosition[i].transform;
+            collection.transform.localPosition = Vector3.zero;
+            collection.GetComponent<ActivateChest>().enabled = true;
+            collection.GetComponent<Collection>().ID = (collectionAttribute[i].ID);
+            collection.GetComponent<Collection>().DES = (collectionAttribute[i].DES);
         }
     }
 	
