@@ -31,6 +31,7 @@ public class GameController : MonoBehaviour
     private OOFormArray mFormChestNum = null;
     private OOFormArray mFormTbCollection = null;
     private OOFormArray mFormTbReward = null;
+    private OOFormArray mFormRewardNum = null;
     private List<RewardAttribute> rewardAttributeList = new List<RewardAttribute>();
     private void Awake()
     {
@@ -53,14 +54,21 @@ public class GameController : MonoBehaviour
         {
             mFormTbReward = OOFormArray.ReadFromResources("Data/Tables/TbRewards");
         }
-        #endregion
-
         for (int i = 1; i < mFormTbReward.mRowCount; i++)
         {
             var buff = mFormTbReward.GetObject<RewardAttribute>(i);
             rewardAttributeList.Add(buff);
         }
+        #endregion
 
+        #region 读取奖励存贮表
+        if (mFormRewardNum == null)
+        {
+            mFormRewardNum = OOFormArray.ReadFromResources("Data/DataStored/RewardNum");
+        }
+        #endregion
+
+        #region 宝箱存贮表操作
         if (mFormChestNum.mRowCount != mFormTbCollection.mRowCount)
         {
             //存贮的宝箱数量的表格行数和宝箱配置表行数不相同,代表宝箱种类有变化,需要重新生成存贮表
@@ -80,6 +88,34 @@ public class GameController : MonoBehaviour
                 mFormChestNum.SetInt(0, 2, i);
             }        
         }
+        #endregion
+
+        #region 卡片存贮表操作
+        //两个表格行数不等,需要更新奖励存贮表
+        if (mFormTbReward.mRowCount != mFormRewardNum.mRowCount)
+        {
+            mFormRewardNum = new OOFormArray();
+            mFormRewardNum.InsertRow(0);
+            mFormRewardNum.InsertColumn(0);
+            mFormRewardNum.InsertColumn(0);
+            mFormRewardNum.InsertColumn(0);
+            mFormRewardNum.SetString("ID", 0, 0);
+            mFormRewardNum.SetString("DES", 1, 0);
+            mFormRewardNum.SetString("Num", 2, 0);
+            for (int i = 1; i < mFormTbReward.mRowCount; i++)
+            {
+                mFormRewardNum.InsertRow(i);
+                //写入ID
+                mFormRewardNum.SetInt(i - 1, 0, i);
+                //写入DES
+                mFormRewardNum.SetString(mFormTbReward.GetString("DES", (i - 1).ToString()), 1, i);
+                //写入数量
+                mFormRewardNum.SetInt(0, 2, i);
+            }
+        }
+        #endregion
+
+        //刷新UI显示
         RefreshNum();
 
     }
@@ -120,6 +156,7 @@ public class GameController : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        mFormRewardNum.SaveFormFile("Assets/Resources/Data/DataStored/RewardNum.txt");
         mFormChestNum.SaveFormFile("Assets/Resources/Data/DataStored/ChestNum.txt");
     }
     /// <summary>
@@ -149,8 +186,11 @@ public class GameController : MonoBehaviour
             if (comparisonNum > randomNum)
             {
                 Debug.Log("奖励名称为" + rewardAttributeList[i].DES);
+                showReward.gameObject.GetComponent<Animator>().Play("Reward");
                 showReward.gameObject.SetActive(true);
                 showReward.sprite = Resources.Load(rewardAttributeList[i].Path, typeof(Sprite)) as Sprite;
+                int currentNum = mFormRewardNum.GetInt("Num",  i + 1);
+                mFormRewardNum.SetInt(currentNum + 1, 2, i + 1);
                 break;
             }
         }

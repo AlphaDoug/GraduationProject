@@ -16,11 +16,13 @@ public class OpenChest : MonoBehaviour
         {
             mFormTbCollection = OOFormArray.ReadFromResources("Data/Tables/TbCollection");
         }
+
         for (int i = 1; i < mFormTbCollection.mRowCount; i++)
         {
             var m_collectionAttribute = mFormTbCollection.GetObject<TaskController.CollectionAttribute>(i);
             collectionAttribute.Add(m_collectionAttribute);
         }
+        
     }
     // Use this for initialization
     void Start ()
@@ -42,4 +44,6 @@ public class OpenChest : MonoBehaviour
     {
 		
 	}
+
+
 }
