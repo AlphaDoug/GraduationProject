@@ -7,6 +7,8 @@ public class OpenChest : MonoBehaviour
 
     [SerializeField]
     private GameObject[] chestPosition;
+    [SerializeField]
+    private GameObject[] chestNumText;
     private OOFormArray mFormTbCollection = null;
     private List<TaskController.CollectionAttribute> collectionAttribute = new List<TaskController.CollectionAttribute>();
 
@@ -33,6 +35,7 @@ public class OpenChest : MonoBehaviour
             var collection = Instantiate(collectionPrefab) as GameObject;
             collection.transform.parent = chestPosition[i].transform;
             collection.transform.localPosition = Vector3.zero;
+            collection.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             collection.GetComponent<ActivateChest>().enabled = true;
             collection.GetComponent<Collection>().ID = (collectionAttribute[i].ID);
             collection.GetComponent<Collection>().DES = (collectionAttribute[i].DES);
