@@ -23,28 +23,30 @@ public class IdleRunJump : MonoBehaviour {
 
 		if (animator)
 		{
-			AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);			
+			//AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);			
 
-			if (stateInfo.IsName("Base Layer.Run"))
-			{
-				if (Input.GetButton("Fire1")) animator.SetBool("Jump", true);                
-            }
-			else
-			{
-				animator.SetBool("Jump", false);                
-            }
+			//if (stateInfo.IsName("Base Layer.Run"))
+			//{
+			//	if (Input.GetButton("Fire1")) animator.SetBool("Jump", true);                
+   //         }
+			//else
+			//{
+			//	animator.SetBool("Jump", false);                
+   //         }
 
-			if(Input.GetButtonDown("Fire2") && animator.layerCount >= 2)
-			{
-				animator.SetBool("Hi", !animator.GetBool("Hi"));
-			}
+			//if(Input.GetButtonDown("Fire2") && animator.layerCount >= 2)
+			//{
+			//	animator.SetBool("Hi", !animator.GetBool("Hi"));
+			//}
 			
 		
       		float h = Input.GetAxis("Horizontal");
         	float v = Input.GetAxis("Vertical");
 			
 			animator.SetFloat("Speed", h*h+v*v);
-            animator.SetFloat("Direction", h, DirectionDampTime, Time.deltaTime);	
+            animator.SetFloat("Direction", h, DirectionDampTime, Time.deltaTime);
+            Debug.Log(animator.GetFloat("Direction"));
+            
 		}   		  
 	}
 }
