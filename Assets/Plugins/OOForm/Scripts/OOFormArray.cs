@@ -532,24 +532,87 @@ public class OOFormArray:object
 			ret.w = StringToFloat(strs[3]);
 		
 		return ret;
-	}
-	
-	
-	
-	
-	/// <summary>
+    }
+    /// <summary>
+    /// Gets the data in type int[].GetIntArray(column[, row])
+    /// </summary>
+    /// <param name="args">
+    /// GetIntArray(column[, row])
+    /// </param>
+    /// <returns>
+    /// The int[].
+    /// </returns>
+    public int[] GetIntArray(params object[] args)
+    {
+        string str = GetStringData(args);
+        string[] retStr;
+        retStr = str.Split(',');
+        int[] ret =new int [retStr.Length];
+        for (int i = 0; i < retStr.Length; i++)
+        {
+            if (!int.TryParse(retStr[i], out ret[i]))
+            {
+                ret[i] = 0;
+            }         
+        }
+        return ret;
+    }
+
+    /// <summary>
+    /// Gets the data in type string[].GetStringArray(column[, row])
+    /// </summary>
+    /// <param name="args">
+    /// GetStringArray(column[, row])
+    /// </param>
+    /// <returns>
+    /// The string[].
+    /// </returns>
+    public string[] GetStringArray(params object[] args)
+    {
+        string str = GetStringData(args);
+        string[] retStr;
+        retStr = str.Split(',');
+        return retStr;
+    }
+
+    /// <summary>
+    /// Gets the data in type float[].GetFloatArray(column[, row])
+    /// </summary>
+    /// <param name="args">
+    /// GetFloatArray(column[, row])
+    /// </param>
+    /// <returns>
+    /// The float[].
+    /// </returns>
+    public float[] GetFloatArray(params object[] args)
+    {
+        string str = GetStringData(args);
+        string[] retStr;
+        retStr = str.Split(',');
+        float[] ret = new float[retStr.Length];
+        for (int i = 0; i < retStr.Length; i++)
+        {
+            if (!float.TryParse(retStr[i], out ret[i]))
+            {
+                ret[i] = 0;
+            }
+        }
+        return ret;
+    }
+
+    /// <summary>
     /// Sets the string data. SetStringData(setValue, column, row)
-	/// </summary>
-	/// <returns>
-	/// The string data.
-	/// </returns>
-	/// <param name='stringValue'>
-	/// If set to <c>true</c> string value.
-	/// </param>
-	/// <param name='args'>
+    /// </summary>
+    /// <returns>
+    /// The string data.
+    /// </returns>
+    /// <param name='stringValue'>
+    /// If set to <c>true</c> string value.
+    /// </param>
+    /// <param name='args'>
     /// SetStringData(setValue, column, row)
-	/// </param>
-	public bool SetStringData(string stringValue, object[] args)
+    /// </param>
+    public bool SetStringData(string stringValue, object[] args)
 	{
 		if(args.Length <= 0)
 			return false;
