@@ -52,7 +52,11 @@ public class RobotCreator : MonoBehaviour
         }
 
 	}
-	
+	/// <summary>
+    /// 创建一个机器人,成功返回真
+    /// </summary>
+    /// <param name="robotAttribute">机器人属性</param>
+    /// <returns></returns>
     private bool CreateRobot(RobotAttribute robotAttribute)
     {
         if (robotAttribute == null)
